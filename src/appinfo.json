@@ -1,0 +1,14 @@
+{
+  "id": "webapps-html5-background",
+  "title": "Background",
+  "description": "HTML5 background",
+  "version": "1.0.0",
+  "vendor": "Igalia, S.L.",
+  "type": "web",
+  "main": "index.html",
+  "uiRevision": "2",
+  "icon": "icon.svg",
+  "surface": {
+    "role": "background"
+  }
+}

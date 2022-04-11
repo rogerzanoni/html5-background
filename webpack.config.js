@@ -26,7 +26,7 @@ module.exports = {
         new CleanWebpackPlugin(['dist']),
         new CopyPlugin([
             {
-                from: 'src/config.xml',
+                from: 'src/appinfo.json',
                 flatten: true
             },
             {
