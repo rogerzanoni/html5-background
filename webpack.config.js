@@ -1,11 +1,9 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const ZipPlugin = require('zip-webpack-plugin');
-
 
 module.exports = {
     mode: 'production',
@@ -20,21 +18,30 @@ module.exports = {
         library: '[name]'
     },
     optimization: {
-        minimizer: [new UglifyJsPlugin()],
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                minify: TerserPlugin.uglifyJsMinify,
+                terserOptions: {}
+            })
+        ],
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
-        new CopyPlugin([
-            {
-                from: 'src/appinfo.json',
-                flatten: true
-            },
-            {
-                from: 'src/images/*',
-                to: 'images/',
-                flatten: true
-            },
-        ]),
+        new CleanWebpackPlugin({
+            cleanAfterEveryBuildPatterns: ['dist']
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: 'src/appinfo.json',
+                    to: 'appinfo.json'
+                },
+                {
+                    from: 'src/images/*',
+                    to: 'images/[name][ext]'
+                },
+            ]
+        }),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
             filename: 'index.html',
@@ -42,13 +49,6 @@ module.exports = {
         }),
         new MiniCSSExtractPlugin({
             filename: 'app.css',
-            path: __dirname + '/dist'
-        }),
-        new ZipPlugin({
-            path: __dirname + '/package',
-            filename: 'background',
-            extension: 'wgt',
-            exclude: []
         })
     ],
     module: {
@@ -70,28 +70,14 @@ module.exports = {
             },
             {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'fonts/'
-                        }
-                    }
-                ]
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name][ext]'
+                }
             },
             {
                 test: /\.(gif|png|jpe?g|svg)$/i,
-                use: [
-                    'file-loader',
-                    {
-                        loader: "image-webpack-loader",
-                        options: {
-                            bypassOnDebug: true, // webpack@1.x
-                            disable: true, // webpack@2.x and newer
-                        },
-                    }
-                ]
+                type: 'asset/resource'
             }
         ]
     },
