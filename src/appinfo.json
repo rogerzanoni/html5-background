@@ -9,6 +9,6 @@
   "uiRevision": "2",
   "icon": "icon.svg",
   "surface": {
-    "role": "background"
+    "type": "background"
   }
 }
